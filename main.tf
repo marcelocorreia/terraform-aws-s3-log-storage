@@ -1,17 +1,11 @@
-module "default_label" {
-  source     = "git::https://github.com/marcelocorreia/terraform-null-label.git?ref=master"
-  enabled    = "${var.enabled}"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  name       = "${var.name}"
-  delimiter  = "${var.delimiter}"
-  attributes = "${var.attributes}"
-  tags       = "${var.tags}"
+variable "bucket" {
+  description = "Bucket Name"
 }
 
 resource "aws_s3_bucket" "default" {
   count         = "${var.enabled == "true" ? 1 : 0}"
-  bucket        = "${module.default_label.id}"
+
+  bucket        = "${var.bucket}"
   acl           = "${var.acl}"
   region        = "${var.region}"
   force_destroy = "${var.force_destroy}"
@@ -22,7 +16,7 @@ resource "aws_s3_bucket" "default" {
   }
 
   lifecycle_rule {
-    id      = "${module.default_label.id}"
+    id      = "${var.bucket}"
     enabled = "${var.lifecycle_rule_enabled}"
 
     prefix = "${var.lifecycle_prefix}"
@@ -63,5 +57,5 @@ resource "aws_s3_bucket" "default" {
     }
   }
 
-  tags = "${module.default_label.tags}"
+  tags = "${var.tags}"
 }
